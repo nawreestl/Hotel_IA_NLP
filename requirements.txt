@@ -1,0 +1,10 @@
+flask
+pandas
+langchain
+openai
+python-dotenv
+faker
+langchain_community
+tabulate
+ pandas 
+ plotly

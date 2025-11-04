@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assistant Hôtel AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='chatbot.css') }}">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>🏨 Hôtel AI</h2>
+    <a href="/dashboard">📊 Tableau de bord</a>
+    <a href="/crud">📝 CRUD</a>
+    <a href="/chatbot" class="active">💬 Chatbot</a>
+    <a href="/logout">🚪 Déconnexion</a>
+  </div>
+
+  <!-- CONTENU PRINCIPAL -->
+  <div class="main">
+    <div class="chat-container">
+      <div class="chat-header">
+        <i class="fas fa-robot"></i>
+        <span>Agent </span>
+      </div>
+
+      <div class="chat-box" id="chat-box">
+        <div class="bot-message">
+           Hello, Admin 👋
+        </div>
+      </div>
+
+      <div class="input-area">
+        <input type="text" id="user-input" placeholder="Écrivez votre message ici...">
+        <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const message = input.value.trim();
+      if (message === "") return;
+
+      const chatBox = document.getElementById("chat-box");
+
+      // Message utilisateur
+      const userDiv = document.createElement("div");
+      userDiv.classList.add("user-message");
+      userDiv.innerHTML = `<i class="fas fa-user"></i> ${message}`;
+      chatBox.appendChild(userDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      input.value = "";
+
+      // Effet "bot typing"
+      const typingDiv = document.createElement("div");
+      typingDiv.classList.add("bot-message", "typing");
+      typingDiv.innerHTML = `
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>`;
+      chatBox.appendChild(typingDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Envoi au backend Flask
+      const response = await fetch("/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: message })
+      });
+      const data = await response.json();
+
+      // Supprimer effet typing
+      typingDiv.remove();
+
+      // Message du bot
+      const botDiv = document.createElement("div");
+      botDiv.classList.add("bot-message");
+      botDiv.innerHTML = `<i class="fas fa-robot"></i> ${data.answer}`;
+      chatBox.appendChild(botDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>

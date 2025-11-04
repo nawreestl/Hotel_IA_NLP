@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Hôtel AI</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+/* Quick Links */
+.quick-links { margin: 20px 0; }
+.quick-links a.btn {
+    background:#0984e3; color:white; padding:8px 15px; border-radius:5px; text-decoration:none; margin-right:10px;
+    transition: 0.3s;
+}
+.quick-links a.btn:hover { background:#74b9ff; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>🏨 Hôtel AI</h2>
+    <a href="/dashboard" class="active">📊 Tableau de bord</a>
+    <a href="/crud">📝 CRUD</a>
+    <a href="/chatbot">💬 Chatbot</a>
+    <a href="/logout">🚪 Déconnexion</a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+    <header>
+        <h1>Bienvenue, Admin 👋</h1>
+    </header>
+
+    <!-- Quick Links -->
+    <div class="quick-links">
+        <a href="/crud" class="btn">📝 Gérer CRUD</a>
+        <a href="/chatbot" class="btn">💬 Ouvrir Chatbot</a>
+    </div>
+
+    <!-- STATS CARDS -->
+    <section class="stats">
+        <div class="card"><h3>👥 Clients</h3><p id="nb_clients">--</p></div>
+        <div class="card"><h3>🛏️ Chambres</h3><p id="nb_chambres">--</p></div>
+        <div class="card"><h3>📅 Réservations</h3><p id="nb_reservations">--</p></div>
+        <div class="card"><h3>💳 Paiements</h3><p id="total_paiements">-- DT</p></div>
+        <div class="card"><h3>📈 Taux d'occupation</h3><p id="taux_occupation">-- %</p></div>
+    </section>
+
+    <!-- CHARTS -->
+    <section class="charts">
+        <div class="chart-container">
+            <h3>Réservations par mois</h3>
+            <canvas id="reservationsChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3>Revenu par mois</h3>
+            <canvas id="revenuChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3>Top 5 pays des clients</h3>
+            <canvas id="clientsChart"></canvas>
+        </div>
+    </section>
+</div>
+
+<script>
+// Charger stats et graphiques
+fetch('/api/stats')
+.then(res => res.json())
+.then(data => {
+    document.getElementById('nb_clients').innerText = data.clients;
+    document.getElementById('nb_chambres').innerText = data.chambres;
+    document.getElementById('nb_reservations').innerText = data.reservations;
+    document.getElementById('total_paiements').innerText = data.paiements + " DT";
+    document.getElementById('taux_occupation').innerText = data.taux_occupation + " %";
+
+    // Graphiques
+    new Chart(document.getElementById('reservationsChart'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(data.reservations_par_mois),
+            datasets: [{label:'Réservations', data:Object.values(data.reservations_par_mois), backgroundColor:'#6c5ce7'}]
+        },
+        options:{scales:{y:{beginAtZero:true}}}
+    });
+
+    new Chart(document.getElementById('revenuChart'), {
+        type: 'line',
+        data: {
+            labels: Object.keys(data.revenu_par_mois),
+            datasets: [{label:'Revenu (DT)', data:Object.values(data.revenu_par_mois),
+            borderColor:'#00cec9', backgroundColor:'rgba(0,206,201,0.2)', fill:true}]
+        },
+        options:{scales:{y:{beginAtZero:true}}}
+    });
+
+    new Chart(document.getElementById('clientsChart'), {
+        type: 'doughnut',
+        data: {
+            labels:Object.keys(data.top_pays),
+            datasets:[{data:Object.values(data.top_pays),
+            backgroundColor:['#1B4F72','#21618C','#2874A6','#2E86C1','#3498DB']}]
+        }
+    });
+});
+</script>
+</body>
+</html>

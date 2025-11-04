@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD Hôtel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='crud.css') }}">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>🏨 Hôtel AI</h2>
+    <a href="/dashboard">📊 Tableau de bord</a>
+    <a href="/crud" class="active">📝 CRUD</a>
+    <a href="/chatbot">💬 Chatbot</a>
+    <a href="/logout">🚪 Déconnexion</a>
+</div>
+
+<!-- CONTENU PRINCIPAL -->
+<div class="main-content">
+    <h1>Gestion CRUD</h1>
+    <button id="btn-add">➕ Ajouter</button>
+
+    <table id="crud-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Téléphone</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Nawres Tlili</td>
+                <td>nawres@example.com</td>
+                <td>44845783</td>
+                <td>
+                    <button class="edit-btn">Modifier</button>
+                    <button class="delete-btn">Supprimer</button>
+                </td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Ali Ben</td>
+                <td>ali@example.com</td>
+                <td>12345678</td>
+                <td>
+                    <button class="edit-btn">Modifier</button>
+                    <button class="delete-btn">Supprimer</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div id="form-container">
+        <h2>Formulaire</h2>
+        <form id="crud-form">
+            <input type="hidden" id="record-id">
+            <label>Nom</label>
+            <input type="text" id="name" required>
+            <label>Email</label>
+            <input type="email" id="email" required>
+            <label>Téléphone</label>
+            <input type="text" id="phone" required>
+            <div class="form-buttons">
+                <button type="submit">Enregistrer</button>
+                <button type="button" id="btn-cancel">Annuler</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const table = document.getElementById('crud-table').getElementsByTagName('tbody')[0];
+const formContainer = document.getElementById('form-container');
+const form = document.getElementById('crud-form');
+const btnAdd = document.getElementById('btn-add');
+const btnCancel = document.getElementById('btn-cancel');
+let editingRow = null;
+
+btnAdd.addEventListener('click', () => {
+    formContainer.style.display = 'block';
+    form.reset();
+    editingRow = null;
+});
+
+btnCancel.addEventListener('click', () => {
+    formContainer.style.display = 'none';
+});
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+
+    if(editingRow){
+        editingRow.cells[1].textContent = name;
+        editingRow.cells[2].textContent = email;
+        editingRow.cells[3].textContent = phone;
+    } else {
+        const row = table.insertRow();
+        row.insertCell(0).textContent = table.rows.length + 0; // ID fictif
+        row.insertCell(1).textContent = name;
+        row.insertCell(2).textContent = email;
+        row.insertCell(3).textContent = phone;
+        const actions = row.insertCell(4);
+        actions.innerHTML = '<button class="edit-btn">Modifier</button> <button class="delete-btn">Supprimer</button>';
+        attachRowButtons(row);
+    }
+
+    formContainer.style.display = 'none';
+});
+
+function attachRowButtons(row){
+    row.querySelector('.edit-btn').addEventListener('click', () => {
+        editingRow = row;
+        document.getElementById('name').value = row.cells[1].textContent;
+        document.getElementById('email').value = row.cells[2].textContent;
+        document.getElementById('phone').value = row.cells[3].textContent;
+        formContainer.style.display = 'block';
+    });
+    row.querySelector('.delete-btn').addEventListener('click', () => {
+        row.remove();
+    });
+}
+
+// Attach existing rows
+Array.from(table.rows).forEach(row => attachRowButtons(row));
+</script>
+</body>
+</html>
