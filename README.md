@@ -50,6 +50,7 @@ pip install -r requirements.txt
 Placer les fichiers CSV dans le dossier data/ :
 clients.csv, chambres.csv, reservations.csv, paiements.csv, employes.csv
 
+---
 ##🔹 Utilisation
 Lancer le projet avec Python :
 
