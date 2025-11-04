@@ -50,11 +50,11 @@ pip install -r requirements.txt
 Placer les fichiers CSV dans le dossier data/ :
 clients.csv, chambres.csv, reservations.csv, paiements.csv, employes.csv
 
-🔹 Utilisation
+##🔹 Utilisation
 Lancer le projet avec Python :
 
 
-python main.py
+python app.py
 L’IA sera prête à répondre aux questions sur les données hôtelières.
 
 Tapez exit ou quit pour fermer l’application.
